@@ -50,7 +50,7 @@ float FILT_MovAverageFilt_f32(
 {
 	pValueArr[pStruct->cnt] = newValue;
 	
-	if (pStruct->cnt < pStruct->windowWidth)
+	if (pStruct->cnt < (pStruct->windowWidth - 1))
 	{
 		pStruct->cnt++;
 	}
