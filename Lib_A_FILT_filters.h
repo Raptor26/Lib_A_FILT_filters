@@ -51,51 +51,76 @@ typedef struct
 	float filtValue;
 } FILT_comp_filt_s;
 
+/**
+ * @brief	Структура для функции скользящего среднего FILT_MovAverageFilt_f32()
+ */
 typedef struct
 {
 	/**
-	 * @brief	Количество измерений, по которым будет производится усреднение;
+	 * @brief	Количество последних "n" измерений, по которым будет
+	 * 			производится усреднение
 	 */
-	uint16_t windowWidth;
-
-	uint16_t cnt;
+	uint32_t windowWidth;
 
 	/**
-	 * @brief 	Значение переменной, которое необходимо фильтровать, на шаге <t-windowWidth>;
+	 * @brief	Счетчик номера ячейки массива, куда будет записано новое значение
 	 */
-	float prePreValue;
-
-	float preValue;
+	uint32_t cnt;
 
 	/**
-	 * @brief	Фильтрованное значение на шаге <t-1>;
+	 * @brief	Фильтрованное значение на шаге <t-1>
 	 */
 	float preFiltValue;
 
 	/**
-	 * @brief	Фильтрованное значение, которое будет рассчитано при вызове функции;
+	 * @brief	Фильтрованное значение, которое будет рассчитано при вызове функции
 	 */
-	float newFiltValue;
+	float filtValue;
 
-} FILT_moving_average_filt_s;
+} FILT_moving_average_filt_f32_s;
+
+typedef struct
+{
+	/**
+	 * @brief	Количество измерений, по которым будет производится усреднение
+	 */
+	uint32_t windowWidth;
+
+	/**
+	 * @brief	Счетчик номера ячейки массива, куда будет записано новое значение
+	 */
+	uint32_t cnt;
+
+	int32_t filtValue;
+
+} FILT_moving_average_filt_i32_s;
 /******************************************************************************/
-
 
 /******************************************************************************/
 // Секция определения глобальных переменных
 /******************************************************************************/
 
-
 /******************************************************************************/
 // Секция прототипов глобальных функций
 extern float FILT_ComplFilt_f32(
-                                FILT_comp_filt_s *pStruct,
-                                float value);
+    FILT_comp_filt_s *pStruct,
+    float value);
 
 extern float FILT_MovAverageFilt_f32(
-                                     FILT_moving_average_filt_s *pStruct,
-                                     float newValue,
-                                     float pValueArr[]);
+    FILT_moving_average_filt_f32_s *pStruct,
+    float newValue,
+    float pValueArr[]);
+
+extern float FILT_MovAverageFiltWithWindow_f32(
+    FILT_moving_average_filt_f32_s *pStruct,
+    float newValue,
+    float pValueArr[],
+    float windowArr[]);
+
+extern int32_t FILT_MovAverFilt_u32(
+    FILT_moving_average_filt_i32_s *pStruct,
+    int32_t newValue,
+    int32_t pValueArr[]);
 /******************************************************************************/
 
 
