@@ -53,17 +53,17 @@ FILT_MovAverageFilt_f32 (
   float newValue,
   float pValueArr[])
 {
-  if ((pStruct->windowWidth != 0)
-      && (pStruct->windowWidth != 1))
+  if ((pStruct->init_windowWidth != 0)
+      && (pStruct->init_windowWidth != 1))
   {
     pStruct->filtValue = pStruct->filtValue
                          + ((newValue - pValueArr[pStruct->cnt]));
 
     pValueArr[pStruct->cnt] = newValue;
 
-    pStruct->cnt = (pStruct->cnt + 1) % pStruct->windowWidth;
+    pStruct->cnt = (pStruct->cnt + 1) % pStruct->init_windowWidth;
 
-    return pStruct->filtValue / (float) pStruct->windowWidth;
+    return pStruct->filtValue / (float) pStruct->init_windowWidth;
   }
   else
   {
@@ -78,18 +78,18 @@ FILT_MovAverageFiltWithWindow_f32 (
   float pValueArr[],
   float windowArr[])
 {
-  pStruct->cnt = (pStruct->cnt + 1) % pStruct->windowWidth;
+  pStruct->cnt = (pStruct->cnt + 1) % pStruct->init_windowWidth;
 
   pValueArr[pStruct->cnt] = newValue;
 
-  float resultArr[pStruct->windowWidth];
+  float resultArr[pStruct->init_windowWidth];
 
   uint32_t i = 0;
-  for (i = 0; i < pStruct->windowWidth; i++)
+  for (i = 0; i < pStruct->init_windowWidth; i++)
   {
     FILT_CheckMaxCntValue (
       &pStruct->cnt,
-      pStruct->windowWidth);
+      pStruct->init_windowWidth);
     
     resultArr[i] = windowArr[i] * pValueArr[pStruct->cnt];
     pStruct->cnt++;
@@ -97,12 +97,12 @@ FILT_MovAverageFiltWithWindow_f32 (
 
   float returnValue = 0;
 
-  for (i = 0; i < pStruct->windowWidth; i++)
+  for (i = 0; i < pStruct->init_windowWidth; i++)
   {
     returnValue += resultArr[i];
   }
 
-  return returnValue / (float) pStruct->windowWidth;
+  return returnValue / (float) pStruct->init_windowWidth;
 }
 
 int32_t
@@ -115,9 +115,9 @@ FILT_MovAverFilt_u32 (
 
   pValueArr[pStruct->cnt] = newValue;
 
-  pStruct->cnt = (pStruct->cnt + 1) % pStruct->windowWidth;
+  pStruct->cnt = (pStruct->cnt + 1) % pStruct->init_windowWidth;
 
-  return (int32_t) pStruct->filtValue / pStruct->windowWidth;
+  return (int32_t) pStruct->filtValue / pStruct->init_windowWidth;
 }
 
 void
