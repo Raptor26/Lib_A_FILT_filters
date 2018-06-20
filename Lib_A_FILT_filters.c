@@ -41,6 +41,10 @@ FILT_ComplFilt_f32(
   FILT_comp_filt_s *pStruct,
   float value)
 {
+	if ( pStruct->filtCoeff > 1.0f)
+	{
+		 pStruct->filtCoeff = 1.0f;
+	}
   pStruct->filtValue = pStruct->filtValue * pStruct->filtCoeff
                        + value * (1 - pStruct->filtCoeff);
 
