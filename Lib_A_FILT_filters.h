@@ -121,6 +121,22 @@ extern int32_t FILT_MovAverFilt_u32(
     FILT_moving_average_filt_i32_s *pStruct,
     int32_t newValue,
     int32_t pValueArr[]);
+
+extern float
+filter_db2 (
+	float* In, 
+    size_t length_In);
+
+extern float
+__filter_db2(
+	float* In,
+	size_t length_In);
+
+extern void 
+FILT_GetLastVal (
+	float *pData, 
+	float val, 
+	uint16_t lenght);
 /******************************************************************************/
 
 

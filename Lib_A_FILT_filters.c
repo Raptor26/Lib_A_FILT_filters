@@ -124,14 +124,24 @@ FILT_MovAverFilt_u32 (
 	return (int32_t) pStruct->filtValue / pStruct->init_windowWidth;
 }
 
-float*
-filter_db2 (
-	float* In, size_t
-	length_In)
-{
-	const int m = 4;
 
-	float db_2[4] =
+/**
+ * @brief Функция выполняет фильтрацию сигнала по N измерениям
+ * @param[in] In: Указатель на нулевой элемент массива, в котором содержатся 
+ *                N последних измерений сигнала
+ * @param[in] length_In:  Количество ячеек массива измерений (количество 
+ *                        измерений, по которым будет произведена фильтрация 
+ *                        сигнала)
+ * @return  Фильтрованное по последним N измерениям значение сигнала
+ */
+float
+filter_db2 (
+	float* In,
+	size_t length_In)
+{
+	const size_t m = 4;
+
+	float db_2[] =
 	{
 		-0.0914996174855392,
 		0.158462629663905,
@@ -163,20 +173,52 @@ filter_db2 (
 			Out[i] += In[i - j] * db_2[j];
 		}
 	}
-	return Out;
+	return arr[3];
 }
 
-float __filter_db2(float* In)
+float
+__filter_db2(
+	float* In,
+	size_t length_In)
 {
-	float res           = 0.0;
+	float res = 0.0f;
 
-	const int len       = 4;
-	float db_2[4]   = { 0.341532575313102, 0.591494822462547, 0.158462629663905, - 0.0914996174855392 };
+	float db_2[] = {
+		0.341532575313102,
+		0.591494822462547,
+		0.158462629663905,
+		-0.0914996174855392,
+	};
 
-	int j = 0;
-	for (j = 0; j < len; j++) { res += In[j] * db_2[j]; }
+	size_t j = 0;
+	for (j = 0; j < length_In; j++)
+	{
+		res += In[j] * db_2[j];
+	}
 
 	return res;
+}
+
+void
+FILT_GetLastVal (
+	float *pData,
+	float val,
+	uint16_t lenght)
+{
+	/* Указатель на начало массива */
+	float *pArr = pData;
+
+	/* Смещение массива */
+	uint16_t i;
+	pData++;
+	for (i = 0; i < (lenght - 1); i++)
+	{
+		*pArr++ = *pData++;
+	}
+
+	pData--;
+	/* Копирование нового значения в крайний элемент массива */
+	*pData = val;
 }
 
 void
