@@ -33,6 +33,20 @@
 
 /******************************************************************************/
 // Секция определения констант
+#if !defined (__FILT_FPT__)
+#error "Please, set __FILT_FPT__ = 'f' or 'd'"
+#endif
+
+/* Если __FILT_FPT__ равен __FILT_FPT__ */
+#if 	__FILT_FPT__ == 	'f'
+#undef 	__FILT_FPT__
+#define __FILT_FPT__		float
+
+/* Если __FILT_FPT__ равен double */
+#elif 	__FILT_FPT__ == 	'd'
+#undef  __FILT_FPT__
+#define __FILT_FPT__		double
+#endif
 /******************************************************************************/
 
 
@@ -43,13 +57,13 @@ typedef struct
 	/**
 	 * @brief	Коэффициент фильтра;
 	 */
-	float filtCoeff;
+	__FILT_FPT__ filtCoeff;
 
 	/**
 	 * @brief	Выходное значение фильтра за предыдущий вызов функции;
 	 */
-	float filtValue;
-} FILT_comp_filt_s;
+	__FILT_FPT__ filtValue;
+} filt_complementary_s;
 
 /**
  * @brief	Структура для функции скользящего среднего FILT_MovAverageFilt_f32()
@@ -70,14 +84,14 @@ typedef struct
 	/**
 	 * @brief	Фильтрованное значение на шаге <t-1>
 	 */
-	float preFiltValue;
+	__FILT_FPT__ preFiltValue;
 
 	/**
 	 * @brief	Фильтрованное значение, которое будет рассчитано при вызове функции
 	 */
-	float filtValue;
+	__FILT_FPT__ filtValue;
 
-} FILT_moving_average_filt_f32_s;
+} filt_moving_average_fpt_s;
 
 typedef struct
 {
@@ -93,7 +107,7 @@ typedef struct
 
 	int32_t filtValue;
 
-} FILT_moving_average_filt_i32_s;
+} filt_moving_average_i32_s;
 /******************************************************************************/
 
 /******************************************************************************/
@@ -102,40 +116,44 @@ typedef struct
 
 /******************************************************************************/
 // Секция прототипов глобальных функций
-extern float FILT_ComplFilt_f32(
-    FILT_comp_filt_s *pStruct,
-    float value);
+extern __FILT_FPT__
+FILT_Complementary_fpt(
+	filt_complementary_s *pStruct,
+	__FILT_FPT__ value);
 
-extern float FILT_MovAverageFilt_f32(
-    FILT_moving_average_filt_f32_s *pStruct,
-    float newValue,
-    float pValueArr[]);
+extern __FILT_FPT__
+FILT_MovAverage_fpt(
+	filt_moving_average_fpt_s *pStruct,
+	__FILT_FPT__ newValue,
+	__FILT_FPT__ pValueArr[]);
 
-extern float FILT_MovAverageFiltWithWindow_f32(
-    FILT_moving_average_filt_f32_s *pStruct,
-    float newValue,
-    float pValueArr[],
-    float windowArr[]);
+extern __FILT_FPT__
+FILT_MovAverageFiltWithWindow_fpt(
+	filt_moving_average_fpt_s *pStruct,
+	__FILT_FPT__ newValue,
+	__FILT_FPT__ pValueArr[],
+	__FILT_FPT__ windowArr[]);
 
-extern int32_t FILT_MovAverFilt_u32(
-    FILT_moving_average_filt_i32_s *pStruct,
-    int32_t newValue,
-    int32_t pValueArr[]);
+extern int32_t
+FILT_MovAverFilt_u32(
+	filt_moving_average_i32_s *pStruct,
+	int32_t newValue,
+	int32_t pValueArr[]);
 
-extern float
+extern __FILT_FPT__
 filter_db2 (
-	float* In, 
-    size_t length_In);
-
-extern float
-__filter_db2(
-	float* In,
+	__FILT_FPT__* In,
 	size_t length_In);
 
-extern void 
+extern __FILT_FPT__
+__filter_db2(
+	__FILT_FPT__* In,
+	size_t length_In);
+
+extern void
 FILT_GetLastVal (
-	float *pData, 
-	float val, 
+	__FILT_FPT__ *pData,
+	__FILT_FPT__ val,
 	uint16_t lenght);
 /******************************************************************************/
 
