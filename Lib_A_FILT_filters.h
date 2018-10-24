@@ -52,6 +52,12 @@
 
 /******************************************************************************/
 // Секция определения типов
+typedef enum
+{
+	FILT_ERROR = 0,
+	FILT_SUCCESS,
+} filt_fnc_status_e;
+
 typedef struct
 {
 	/**
@@ -74,7 +80,7 @@ typedef struct
 	 * @brief	Количество последних "n" измерений, по которым будет
 	 * 			производится усреднение
 	 */
-	uint32_t init_windowWidth;
+	uint32_t windowWidth;
 
 	/**
 	 * @brief	Счетчик номера ячейки массива, куда будет записано новое значение
@@ -91,7 +97,26 @@ typedef struct
 	 */
 	__FILT_FPT__ filtValue;
 
+	/**
+	 * @brief 	Указатель на массив для хранения последних n измерений
+	 */
+	__FILT_FPT__ *pWindowArr;
+
+	filt_fnc_status_e initStatus_e;
 } filt_moving_average_fpt_s;
+
+typedef struct
+{
+	/**
+	 * @brief	Размерность массива для фильтра скользящего среднего
+	 */
+	uint32_t windowWidth;
+
+	/**
+	 * @brief	Указатель на массив для хранения последних n измерений
+	 */
+	__FILT_FPT__ *pWindowArr;
+} filt_moving_average_init_struct_fpt_s;
 
 typedef struct
 {
@@ -106,7 +131,6 @@ typedef struct
 	uint32_t cnt;
 
 	int32_t filtValue;
-
 } filt_moving_average_i32_s;
 /******************************************************************************/
 
@@ -124,8 +148,16 @@ FILT_Complementary_fpt(
 extern __FILT_FPT__
 FILT_MovAverage_fpt(
 	filt_moving_average_fpt_s *pStruct,
-	__FILT_FPT__ newValue,
-	__FILT_FPT__ pValueArr[]);
+	__FILT_FPT__ newValue);
+
+extern filt_fnc_status_e
+FILT_Init_MovAverage_fpt(
+	filt_moving_average_fpt_s 				*pFilt_s,
+	filt_moving_average_init_struct_fpt_s 	*pInitFilt_s);
+
+extern void
+FILT_MovAverage_StructInit(
+	filt_moving_average_init_struct_fpt_s   *pInitFilt_s);
 
 extern __FILT_FPT__
 FILT_MovAverageFiltWithWindow_fpt(

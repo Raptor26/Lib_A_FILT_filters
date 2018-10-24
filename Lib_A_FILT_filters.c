@@ -47,34 +47,62 @@ FILT_Complementary_fpt(
 		pStruct->filtCoeff = 1.0f;
 	}
 	pStruct->filtValue =
-		pStruct->filtValue * pStruct->filtCoeff
-		+ value * (1 - pStruct->filtCoeff);
+		(pStruct->filtValue * pStruct->filtCoeff)
+		+ (value * (((__FILT_FPT__) 1.0) - pStruct->filtCoeff));
 
-	return pStruct->filtValue;
+	return (pStruct->filtValue);
 }
 
 __FILT_FPT__
-FILT_MovAverage_fpt (
-	filt_moving_average_fpt_s *pStruct,
-	__FILT_FPT__ newValue,
-	__FILT_FPT__ pValueArr[])
+FILT_MovAverage_fpt(
+	filt_moving_average_fpt_s *pFilt_s,
+	__FILT_FPT__ newValue)
 {
-	if ((pStruct->init_windowWidth != 0)
-			&& (pStruct->init_windowWidth != 1))
+	if ((pFilt_s->windowWidth != 0u)
+			&& (pFilt_s->windowWidth != 1u))
 	{
-		pStruct->filtValue =
-			pStruct->filtValue + ((newValue - pValueArr[pStruct->cnt]));
+		__FILT_FPT__ *pWindowArr = pFilt_s->pWindowArr;
 
-		pValueArr[pStruct->cnt] = newValue;
+		pFilt_s->filtValue =
+			pFilt_s->filtValue + ((newValue - pWindowArr[pFilt_s->cnt]));
 
-		pStruct->cnt = (pStruct->cnt + 1) % pStruct->init_windowWidth;
+		pWindowArr[pFilt_s->cnt] = newValue;
 
-		return pStruct->filtValue / (__FILT_FPT__) pStruct->init_windowWidth;
+		pFilt_s->cnt =
+			(pFilt_s->cnt + 1) % pFilt_s->windowWidth;
+
+		return (pFilt_s->filtValue / (__FILT_FPT__) pFilt_s->windowWidth);
 	}
 	else
 	{
-		return newValue;
+		return (newValue);
 	}
+}
+
+filt_fnc_status_e
+FILT_Init_MovAverage_fpt(
+	filt_moving_average_fpt_s 				*pFilt_s,
+	filt_moving_average_init_struct_fpt_s 	*pInitFilt_s)
+{
+	pFilt_s->initStatus_e = FILT_ERROR;
+	if ((pInitFilt_s->windowWidth != 0)
+			&& (pInitFilt_s->pWindowArr != NULL))
+	{
+		pFilt_s->cnt			= 0u;
+		pFilt_s->filtValue		= (__FILT_FPT__) 0.0;
+		pFilt_s->windowWidth	= pInitFilt_s->windowWidth;
+		pFilt_s->pWindowArr		= pInitFilt_s->pWindowArr;
+		pFilt_s->initStatus_e	= FILT_SUCCESS;
+	}
+	return (pFilt_s->initStatus_e);
+}
+
+void
+FILT_MovAverage_StructInit(
+	filt_moving_average_init_struct_fpt_s	*pInitFilt_s)
+{
+	pInitFilt_s->pWindowArr = NULL;
+	pInitFilt_s->windowWidth = 0u;
 }
 
 __FILT_FPT__
@@ -84,18 +112,18 @@ FILT_MovAverageFiltWithWindow_fpt (
 	__FILT_FPT__ pValueArr[],
 	__FILT_FPT__ windowArr[])
 {
-	pStruct->cnt = (pStruct->cnt + 1) % pStruct->init_windowWidth;
+	pStruct->cnt = (pStruct->cnt + 1) % pStruct->windowWidth;
 
 	pValueArr[pStruct->cnt] = newValue;
 
-	__FILT_FPT__ resultArr[pStruct->init_windowWidth];
+	__FILT_FPT__ resultArr[pStruct->windowWidth];
 
 	uint32_t i = 0;
-	for (i = 0; i < pStruct->init_windowWidth; i++)
+	for (i = 0; i < pStruct->windowWidth; i++)
 	{
 		FILT_CheckMaxCntValue (
 			&pStruct->cnt,
-			pStruct->init_windowWidth);
+			pStruct->windowWidth);
 
 		resultArr[i] = windowArr[i] * pValueArr[pStruct->cnt];
 		pStruct->cnt++;
@@ -103,12 +131,12 @@ FILT_MovAverageFiltWithWindow_fpt (
 
 	__FILT_FPT__ returnValue = 0;
 
-	for (i = 0; i < pStruct->init_windowWidth; i++)
+	for (i = 0; i < pStruct->windowWidth; i++)
 	{
 		returnValue += resultArr[i];
 	}
 
-	return returnValue / (__FILT_FPT__) pStruct->init_windowWidth;
+	return (returnValue / (__FILT_FPT__) pStruct->windowWidth);
 }
 
 int32_t
@@ -123,7 +151,7 @@ FILT_MovAverFilt_u32 (
 
 	pStruct->cnt = (pStruct->cnt + 1) % pStruct->init_windowWidth;
 
-	return (int32_t) pStruct->filtValue / pStruct->init_windowWidth;
+	return ((int32_t) pStruct->filtValue / pStruct->init_windowWidth);
 }
 
 
